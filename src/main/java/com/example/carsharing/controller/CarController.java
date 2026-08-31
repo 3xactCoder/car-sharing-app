@@ -1,7 +1,7 @@
 package com.example.carsharing.controller;
 
-import com.example.carsharing.dto.CarDto;
-import com.example.carsharing.dto.CreateCarRequestDto;
+import com.example.carsharing.dto.car.CarDto;
+import com.example.carsharing.dto.car.CreateCarRequestDto;
 import com.example.carsharing.service.CarService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

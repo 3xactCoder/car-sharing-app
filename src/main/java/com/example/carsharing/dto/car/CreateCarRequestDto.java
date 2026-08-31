@@ -1,4 +1,4 @@
-package com.example.carsharing.dto;
+package com.example.carsharing.dto.car;
 
 import com.example.carsharing.model.Car.CarType;
 import jakarta.validation.constraints.DecimalMin;
