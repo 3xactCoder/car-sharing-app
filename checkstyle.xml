@@ -28,6 +28,7 @@
     </module>
     <module name="NewlineAtEndOfFile">
         <property name="fileExtensions" value="java, properties, xml"/>
+        <property name="lineSeparator" value="lf_cr_crlf"/>
     </module>
     <module name="LineLength">
         <property name="max" value="100"/>
