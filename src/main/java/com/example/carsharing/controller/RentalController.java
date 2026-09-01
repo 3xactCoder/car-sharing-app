@@ -50,4 +50,12 @@ public class RentalController {
     ) {
         return rentalService.findById(id, authentication);
     }
+
+    @PostMapping("/{id}/return")
+    public RentalResponseDto returnRental(
+            @PathVariable Long id,
+            Authentication authentication
+    ) {
+        return rentalService.returnRental(id, authentication);
+    }
 }

@@ -17,4 +17,6 @@ public interface RentalService {
     );
 
     RentalResponseDto findById(Long id, Authentication authentication);
+
+    RentalResponseDto returnRental(Long id, Authentication authentication);
 }
