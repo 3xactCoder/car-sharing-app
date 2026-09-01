@@ -11,7 +11,6 @@ import com.example.carsharing.repository.CarRepository;
 import com.example.carsharing.repository.RentalRepository;
 import com.example.carsharing.service.NotificationService;
 import com.example.carsharing.service.RentalService;
-
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
