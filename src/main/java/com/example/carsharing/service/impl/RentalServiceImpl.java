@@ -9,7 +9,9 @@ import com.example.carsharing.model.Rental;
 import com.example.carsharing.model.User;
 import com.example.carsharing.repository.CarRepository;
 import com.example.carsharing.repository.RentalRepository;
+import com.example.carsharing.service.NotificationService;
 import com.example.carsharing.service.RentalService;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +26,7 @@ public class RentalServiceImpl implements RentalService {
     private final RentalRepository rentalRepository;
     private final CarRepository carRepository;
     private final RentalMapper rentalMapper;
+    private final NotificationService notificationService;
 
     @Override
     @Transactional
@@ -71,5 +74,38 @@ public class RentalServiceImpl implements RentalService {
             throw new AccessDeniedException("You don't have access to this rental");
         }
         return rentalMapper.toDto(rental);
+    }
+
+    @Override
+    @Transactional
+    public RentalResponseDto returnRental(Long id, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        Rental rental = rentalRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Can't find rental by id: " + id)
+        );
+        if (user.getRole() != User.Role.MANAGER && !rental.getUser().getId().equals(user.getId())) {
+            throw new AccessDeniedException("You don't have access to this rental");
+        }
+        if (rental.getActualReturnDate() != null) {
+            throw new IllegalStateException("Rental has already been returned");
+        }
+
+        rental.setActualReturnDate(LocalDate.now());
+        Car car = rental.getCar();
+        car.setInventory(car.getInventory() + 1);
+        carRepository.save(car);
+
+        Rental updatedRental = rentalRepository.save(rental);
+
+        notificationService.sendMessage(String.format(
+                "🏁 Rental Returned!\nRental ID: %d\nUser: %s\nCar: %s %s\nActual Return Date: %s",
+                updatedRental.getId(),
+                rental.getUser().getEmail(),
+                car.getBrand(),
+                car.getModel(),
+                updatedRental.getActualReturnDate()
+        ));
+
+        return rentalMapper.toDto(updatedRental);
     }
 }
