@@ -1,7 +1,7 @@
 package com.example.carsharing.service;
 
-import com.example.carsharing.dto.CarDto;
-import com.example.carsharing.dto.CreateCarRequestDto;
+import com.example.carsharing.dto.car.CarDto;
+import com.example.carsharing.dto.car.CreateCarRequestDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

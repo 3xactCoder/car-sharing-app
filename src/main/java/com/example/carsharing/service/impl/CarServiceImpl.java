@@ -1,7 +1,7 @@
 package com.example.carsharing.service.impl;
 
-import com.example.carsharing.dto.CarDto;
-import com.example.carsharing.dto.CreateCarRequestDto;
+import com.example.carsharing.dto.car.CarDto;
+import com.example.carsharing.dto.car.CreateCarRequestDto;
 import com.example.carsharing.exceptions.EntityNotFoundException;
 import com.example.carsharing.mapper.CarMapper;
 import com.example.carsharing.model.Car;
