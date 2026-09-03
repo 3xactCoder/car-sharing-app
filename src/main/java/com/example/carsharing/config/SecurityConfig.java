@@ -36,7 +36,9 @@ public class SecurityConfig {
                 .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/register", "/login", "/swagger-ui/**", "/v3/api-docs/**")
+                        .requestMatchers("/register", "/login",
+                                "/swagger-ui/**", "/v3/api-docs/**",
+                                "/payments/success/**", "/payments/cancel/**")
                         .permitAll()
                         .requestMatchers(HttpMethod.GET, "/cars", "/cars/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/cars/**").hasRole("MANAGER")
