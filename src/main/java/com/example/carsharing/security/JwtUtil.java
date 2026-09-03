@@ -17,10 +17,9 @@ public class JwtUtil {
     private final Key secret;
 
     @Value("${jwt.expiration:86400000}")
-    private long expiration;
+    private Long expiration;
 
-    public JwtUtil(@Value("${jwt.secret:defaultSecretKeyWithEnoughEntropyForSha256Bits1234567890}")
-                   String secretString) {
+    public JwtUtil(@Value("${jwt.secret:defaultSecretKeyWithAtLeast256BitsLengthForHmacShaAlgorithm}") String secretString) {
         this.secret = Keys.hmacShaKeyFor(secretString.getBytes(StandardCharsets.UTF_8));
     }
 
