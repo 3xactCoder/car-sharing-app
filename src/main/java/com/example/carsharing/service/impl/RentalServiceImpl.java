@@ -108,4 +108,35 @@ public class RentalServiceImpl implements RentalService {
 
         return rentalMapper.toDto(updatedRental);
     }
+
+    @Override
+    public void checkOverdueRentals() {
+        LocalDate today = LocalDate.now();
+        List<Rental> overdueRentals = rentalRepository.findOverdueRentals(today);
+
+        if (overdueRentals.isEmpty()) {
+            notificationService.sendMessage("No rentals overdue today!");
+            return;
+        }
+
+        for (Rental rental : overdueRentals) {
+            String message = String.format(
+                    "⚠️ OVERDUE RENTAL ALERT ⚠️%n"
+                            + "Rental ID: %d%n"
+                            + "User: %s %s (Email: %s)%n"
+                            + "Car: %s %s%n"
+                            + "Rental Date: %s%n"
+                            + "Expected Return Date: %s",
+                    rental.getId(),
+                    rental.getUser().getFirstName(),
+                    rental.getUser().getLastName(),
+                    rental.getUser().getEmail(),
+                    rental.getCar().getBrand(),
+                    rental.getCar().getModel(),
+                    rental.getRentalDate(),
+                    rental.getReturnDate()
+            );
+            notificationService.sendMessage(message);
+        }
+    }
 }
