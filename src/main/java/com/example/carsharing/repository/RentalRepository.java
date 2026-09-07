@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface RentalRepository extends JpaRepository<Rental, Long> {
-    @Query("SELECT r FROM Rental r WHERE "
+    @Query("SELECT r FROM Rental r JOIN FETCH r.car JOIN FETCH r.user WHERE "
             + "(:userId IS NULL OR r.user.id = :userId) AND "
             + "(:isActive IS NULL OR "
             + "(:isActive = true AND r.actualReturnDate IS NULL) OR "
@@ -35,4 +35,5 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
     @Query("SELECT r FROM Rental r JOIN FETCH r.car JOIN FETCH r.user "
             + "WHERE r.actualReturnDate IS NULL AND r.returnDate <= :currentDate")
     List<Rental> findOverdueRentals(@Param("currentDate") LocalDate currentDate);
+
 }
