@@ -2,15 +2,15 @@ package com.example.carsharing.controller;
 
 import com.example.carsharing.dto.payment.CreatePaymentSessionRequestDto;
 import com.example.carsharing.dto.payment.PaymentResponseDto;
-import com.example.carsharing.model.User;
 import com.example.carsharing.service.PaymentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,15 +27,16 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class PaymentController {
     private final PaymentService paymentService;
 
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping("/")
-    @Operation(summary = "Get payment history",
-            description = "Managers see all/filtered payments, customers see only their own")
-    public List<PaymentResponseDto> getPayments(
+    @GetMapping
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'MANAGER')")
+    @Operation(summary = "Get payments",
+            description = "List payments by user or all payments for managers")
+    public Page<PaymentResponseDto> getPayments(
             @RequestParam(name = "user_id", required = false) Long userId,
-            @AuthenticationPrincipal User currentUser
+            Pageable pageable,
+            Authentication authentication
     ) {
-        return paymentService.getPayments(userId, currentUser);
+        return paymentService.getPayments(userId, pageable, authentication);
     }
 
     @PreAuthorize("isAuthenticated()")
