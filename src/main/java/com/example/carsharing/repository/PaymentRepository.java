@@ -12,4 +12,8 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     @Query("SELECT p FROM Payment p JOIN p.rental r WHERE r.user.id = :userId")
     List<Payment> findAllByUserId(@Param("userId") Long userId);
+
+    @Query("SELECT COUNT(p) > 0 FROM Payment p "
+            + "WHERE p.rental.user.id = :userId AND p.status = 'PENDING'")
+    boolean existsPendingPaymentByUserId(@Param("userId") Long userId);
 }
