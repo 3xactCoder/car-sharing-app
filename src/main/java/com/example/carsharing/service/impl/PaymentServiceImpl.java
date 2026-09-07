@@ -21,6 +21,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -110,20 +113,23 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public List<PaymentResponseDto> getPayments(Long userId, User currentUser) {
-        if (currentUser.getRole() == User.Role.CUSTOMER) {
-            return paymentRepository.findAllByUserId(currentUser.getId()).stream()
-                    .map(paymentMapper::toDto)
-                    .toList();
+    public Page<PaymentResponseDto> getPayments(
+            Long userId,
+            Pageable pageable,
+            Authentication authentication
+    ) {
+        User currentUser = (User) authentication.getPrincipal();
+        boolean isManager = currentUser.getRole() == User.Role.MANAGER;
+        Long targetUserId = isManager ? userId : currentUser.getId();
+
+        Page<Payment> paymentsPage;
+        if (targetUserId != null) {
+            paymentsPage = paymentRepository.findAllByUserId(targetUserId, pageable);
+        } else {
+            paymentsPage = paymentRepository.findAll(pageable);
         }
-        if (userId != null) {
-            return paymentRepository.findAllByUserId(userId).stream()
-                    .map(paymentMapper::toDto)
-                    .toList();
-        }
-        return paymentRepository.findAll().stream()
-                .map(paymentMapper::toDto)
-                .toList();
+
+        return paymentsPage.map(paymentMapper::toDto);
     }
 
     @Override
