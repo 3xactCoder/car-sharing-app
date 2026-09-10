@@ -45,7 +45,22 @@ public class RentalServiceImpl implements RentalService {
         User user = (User) authentication.getPrincipal();
 
         Rental rental = rentalMapper.toEntity(requestDto, car, user);
-        return rentalMapper.toDto(rentalRepository.save(rental));
+        Rental savedRental = rentalRepository.save(rental);
+
+        notificationService.sendMessage(String.format(
+                "🚗 New Rental Created!\nRental ID: %d\nUser: %s %s (%s)\n"
+                        + "Car: %s %s\nRental Date: %s\nExpected Return Date: %s",
+                savedRental.getId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                car.getBrand(),
+                car.getModel(),
+                savedRental.getRentalDate(),
+                savedRental.getReturnDate()
+        ));
+
+        return rentalMapper.toDto(savedRental);
     }
 
     @Override
@@ -109,10 +124,9 @@ public class RentalServiceImpl implements RentalService {
         return rentalMapper.toDto(updatedRental);
     }
 
-    @Override
     public void checkOverdueRentals() {
-        LocalDate today = LocalDate.now();
-        List<Rental> overdueRentals = rentalRepository.findOverdueRentals(today);
+        LocalDate tomorrowOrEarlier = LocalDate.now().plusDays(1);
+        List<Rental> overdueRentals = rentalRepository.findOverdueRentals(tomorrowOrEarlier);
 
         if (overdueRentals.isEmpty()) {
             notificationService.sendMessage("No rentals overdue today!");
