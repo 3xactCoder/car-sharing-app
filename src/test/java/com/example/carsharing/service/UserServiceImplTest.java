@@ -68,10 +68,13 @@ class UserServiceImplTest {
         UserRegistrationRequestDto request = new UserRegistrationRequestDto();
         request.setEmail("test@example.com");
         request.setPassword("password123");
+        request.setRepeatPassword("password123");
         request.setFirstName("John");
         request.setLastName("Doe");
 
-        when(userRepository.findByEmail(request.getEmail())).thenReturn(Optional.empty());
+        // Замінили findByEmail на existsByEmail
+        when(userRepository.existsByEmail(request.getEmail())).thenReturn(false);
+
         when(userMapper.toEntity(request)).thenReturn(user);
         when(passwordEncoder.encode(request.getPassword())).thenReturn("encodedPassword");
         when(userRepository.save(user)).thenReturn(user);
@@ -89,8 +92,11 @@ class UserServiceImplTest {
     void register_ExistingEmail_ThrowsRegistrationException() {
         UserRegistrationRequestDto request = new UserRegistrationRequestDto();
         request.setEmail("test@example.com");
+        request.setPassword("password123");
+        request.setRepeatPassword("password123");
 
-        when(userRepository.findByEmail(request.getEmail())).thenReturn(Optional.of(user));
+        // Замінили findByEmail на existsByEmail
+        when(userRepository.existsByEmail(request.getEmail())).thenReturn(true);
 
         assertThrows(RegistrationException.class, () -> userService.register(request));
     }
